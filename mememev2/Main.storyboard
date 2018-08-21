@@ -43,14 +43,14 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="memeCollectionCell" id="vND-Ux-ruf">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="memeCollectionCell" id="vND-Ux-ruf" customClass="CollectionCell" customModule="mememev2" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="124" height="124"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
                                             <rect key="frame" x="0.0" y="0.0" width="124" height="124"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gYF-eh-O5m">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gYF-eh-O5m">
                                                     <rect key="frame" x="0.0" y="0.0" width="124" height="124"/>
                                                 </imageView>
                                             </subviews>
@@ -61,6 +61,9 @@
                                             <constraint firstAttribute="bottom" secondItem="gYF-eh-O5m" secondAttribute="bottom" id="TWz-ag-8gj"/>
                                             <constraint firstItem="gYF-eh-O5m" firstAttribute="leading" secondItem="vND-Ux-ruf" secondAttribute="leading" id="iOq-u6-2Lm"/>
                                         </constraints>
+                                        <connections>
+                                            <outlet property="cellImage" destination="gYF-eh-O5m" id="lIa-I1-K4R"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
@@ -78,6 +81,9 @@
                         <viewLayoutGuide key="safeArea" id="uKU-LN-0Sz"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="collection" id="wIW-ya-9QS"/>
+                    <connections>
+                        <outlet property="collectionView" destination="91w-BI-8Vj" id="2kw-Nd-4cp"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dIg-jf-TNZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -343,6 +349,6 @@
         <image name="table" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="kdo-YW-apJ"/>
+        <segue reference="Ls1-bs-cv0"/>
     </inferredMetricsTieBreakers>
 </document>
