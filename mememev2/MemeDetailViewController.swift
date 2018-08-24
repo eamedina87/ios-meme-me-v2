@@ -17,6 +17,7 @@ class MemeDetailViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         if let meme = meme {
             memeImageView.image = meme
+            memeImageView.contentMode = .scaleAspectFit
         }
         self.navigationController?.setNavigationBarHidden(false, animated: false)
     }

@@ -24,22 +24,11 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate
     var originalImage: UIImage? = nil
     var memedImage: UIImage? = nil
     
-    let memeTextAttributes:[String: Any] = [
-        NSAttributedStringKey.strokeColor.rawValue: UIColor.black,
-        NSAttributedStringKey.foregroundColor.rawValue: UIColor.white,
-        NSAttributedStringKey.font.rawValue: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-        NSAttributedStringKey.strokeWidth.rawValue: -3.0]
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
-        topText.defaultTextAttributes = memeTextAttributes
-        topText.textAlignment = NSTextAlignment.center
-        topText.textColor = UIColor.white
-        topText.delegate = self
-        bottomText.defaultTextAttributes = memeTextAttributes
-        bottomText.textAlignment = NSTextAlignment.center
-        bottomText.delegate = self
+        setDelegateAndAttributes(topText)
+        setDelegateAndAttributes(bottomText)
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         if (!isImageSelected){
             setUIElements(false)
@@ -62,17 +51,19 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate
     //MARK: Private Methods
     
     @IBAction func pickImage(_ sender: Any) {
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.delegate = self
-        imagePickerController.sourceType = .photoLibrary
-        present(imagePickerController, animated: true, completion: nil)
+        chooseImageFromCameraOrPhoto(source: .photoLibrary)
     }
     
     @IBAction func takePicture(_ sender: Any) {
-        let imagePickerController = UIImagePickerController()
-        imagePickerController.delegate = self
-        imagePickerController.sourceType = .camera
-        present(imagePickerController, animated: true, completion: nil)
+        chooseImageFromCameraOrPhoto(source: .camera)
+    }
+    
+    func chooseImageFromCameraOrPhoto(source: UIImagePickerControllerSourceType) {
+        let pickerController = UIImagePickerController()
+        pickerController.delegate = self
+        pickerController.allowsEditing = true
+        pickerController.sourceType = source
+        present(pickerController, animated: true, completion: nil)
     }
     
     @IBAction func shareMeme(_ sender: Any) {
@@ -93,8 +84,12 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate
         memedImage = getMemedImage()
         
         let activityController = UIActivityViewController(activityItems: [memedImage], applicationActivities: [])
-        present(activityController,animated: true){
-            self.saveMeme()
+        activityController.completionWithItemsHandler = { activity, success, items, error in
+            if success{
+                self.saveMeme()
+            }
+            self.dismiss(animated: true, completion: {
+            })
         }
         
     }
@@ -157,20 +152,20 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate
 
     
     @objc func keyboardWillShow(_ notification:Notification) {
-        view.frame.origin.y -= getKeyboardHeight(notification)
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y == 0 && bottomText.isEditing{
+                self.view.frame.origin.y -= keyboardSize.height
+            }
+        }
     }
     
     @objc func keyboardWillHide(_ notification:Notification) {
-        view.frame.origin.y = 0
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y != 0{
+                self.view.frame.origin.y += keyboardSize.height
+            }
+        }
     }
-    
-    func getKeyboardHeight(_ notification:Notification) -> CGFloat {
-        
-        let userInfo = notification.userInfo
-        let keyboardSize = userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue // of CGRect
-        return keyboardSize.cgRectValue.height
-    }
-    
     
     func showAlert(message:String){
         let alertController = UIAlertController()
@@ -182,6 +177,16 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate
         present(alertController, animated: true, completion: nil)
     }
     
+    func setDelegateAndAttributes(_ textField:UITextField){
+        textField.defaultTextAttributes = [
+            NSAttributedStringKey.strokeColor.rawValue: UIColor.black,
+            NSAttributedStringKey.foregroundColor.rawValue: UIColor.white,
+            NSAttributedStringKey.font.rawValue: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
+            NSAttributedStringKey.strokeWidth.rawValue: -4.0]
+        textField.textAlignment = NSTextAlignment.center
+        textField.textColor = UIColor.white
+        textField.delegate = self
+    }
     
     //MARK: ImagePicker Delegate Methods
     
@@ -224,6 +229,11 @@ class MainViewController: UIViewController, UIImagePickerControllerDelegate
                 bottomText.text = "Bottom".uppercased()
             }
         }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return false
     }
     
     
